@@ -77,6 +77,21 @@
       footer{display:block}
       .smalllinks{margin-top:12px}
     }
+
+    /* Modal de feedback do formulário */
+    .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s ease}
+    .modal.is-open{opacity:1;visibility:visible;pointer-events:auto}
+    .modal-content{position:relative;width:min(100%,460px);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:34px;box-shadow:0 24px 80px rgba(0,0,0,.45);transform:translateY(10px) scale(.98);transition:transform .2s ease}
+    .modal.is-open .modal-content{transform:translateY(0) scale(1)}
+    .modal-icon{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--accent);color:#0b0d10;font-size:1.35rem;font-weight:900;margin-bottom:20px}
+    .modal-content h3{margin:0 0 10px;font-size:1.5rem;letter-spacing:-.03em}
+    .modal-content p{margin:0;color:var(--muted)}
+    .modal-close{margin-top:26px;width:100%}
+    .modal-close-x{position:absolute;top:12px;right:12px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--muted);font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+    .modal-close-x:hover,.modal-close-x:focus{color:var(--text);border-color:#65707d}
+    body.modal-open{overflow:hidden}
+    .form-status{color:var(--muted);font-size:.9rem;min-height:1.4em}
+
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
   </style>
 </head>
@@ -158,12 +173,13 @@
         <h2>Tem uma vaga,<br>demanda ou projeto?</h2>
         <p class="section-intro" style="margin-top:20px">Conte um pouco sobre o que você precisa. Retorno para conversarmos sobre a melhor forma de ajudar.</p>
       </div>
-      <form action="https://formspree.io/f/mjyklevv" method="POST">
+      <form id="contact-form" action="https://formspree.io/f/mjyklevv" method="POST">
         <div><label for="nome">Nome</label><input id="nome" name="nome" autocomplete="name" required></div>
         <div><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required></div>
         <div><label for="assunto">Assunto</label><input id="assunto" name="assunto" required></div>
         <div><label for="mensagem">Mensagem</label><textarea id="mensagem" name="mensagem" required></textarea></div>
-        <button class="btn primary" type="submit">Enviar mensagem</button>
+        <div class="form-status" id="form-status" aria-live="polite"></div>
+        <button class="btn primary" id="submit-button" type="submit">Enviar mensagem</button>
       </form>
     </div>
   </section>
@@ -176,5 +192,111 @@
     <a href="#inicio">Voltar ao topo ↑</a>
   </div>
 </footer>
+
+  <div class="modal" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
+    <div class="modal-content">
+      <button class="modal-close-x" id="modal-close-x" type="button" aria-label="Fechar mensagem">×</button>
+      <div class="modal-icon" aria-hidden="true">✓</div>
+      <h3 id="modal-title">Mensagem enviada!</h3>
+      <p id="modal-message">Obrigado pelo contato. Em breve retorno para conversarmos.</p>
+      <button class="btn primary modal-close" id="modal-close" type="button">Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const form = document.getElementById("contact-form");
+      const modal = document.getElementById("contact-modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalMessage = document.getElementById("modal-message");
+      const modalClose = document.getElementById("modal-close");
+      const modalCloseX = document.getElementById("modal-close-x");
+      const submitButton = document.getElementById("submit-button");
+      const formStatus = document.getElementById("form-status");
+
+      let lastFocusedElement = null;
+
+      function openModal(title, message, isError = false) {
+        lastFocusedElement = document.activeElement;
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        const icon = modal.querySelector(".modal-icon");
+        icon.textContent = isError ? "!" : "✓";
+
+        modal.classList.add("is-open");
+        document.body.classList.add("modal-open");
+        modalClose.focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+
+        if (lastFocusedElement) {
+          lastFocusedElement.focus();
+        }
+      }
+
+      modalClose.addEventListener("click", closeModal);
+      modalCloseX.addEventListener("click", closeModal);
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const originalButtonText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = "Enviando...";
+        formStatus.textContent = "";
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: {
+              "Accept": "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error("Falha ao enviar o formulário.");
+          }
+
+          form.reset();
+          openModal(
+            "Mensagem enviada!",
+            "Obrigado pelo contato. Em breve retorno para conversarmos."
+          );
+        } catch (error) {
+          openModal(
+            "Não foi possível enviar",
+            "Ocorreu um problema ao enviar sua mensagem. Tente novamente em alguns instantes.",
+            true
+          );
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = originalButtonText;
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
