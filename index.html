@@ -23,13 +23,14 @@
     body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
     a{color:inherit;text-decoration:none}
     .wrap{width:min(calc(100% - 40px),var(--max));margin:auto}
-    header{position:sticky;top:0;z-index:10;background:rgba(11,13,16,.86);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
-    nav{height:70px;display:flex;align-items:center;justify-content:space-between}
-    .brand{font-weight:800;letter-spacing:-.04em}
-    .brand span{color:var(--accent)}
-    .navlinks{display:flex;gap:26px;color:var(--muted);font-size:.92rem}
-    .navlinks a:hover,.navlinks a:focus{color:var(--text)}
-    .hero{min-height:calc(100vh - 70px);display:grid;align-items:center;padding:90px 0 70px}
+    .hero{min-height:100vh;display:grid;align-items:center;padding:70px 0}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.75fr);gap:70px;align-items:center}
+    .hero-copy{min-width:0}
+    .hero-contact{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:30px;box-shadow:0 24px 70px rgba(0,0,0,.18)}
+    .hero-contact h2{font-size:clamp(1.8rem,3vw,2.6rem);margin:0 0 10px;line-height:1.05;letter-spacing:-.05em}
+    .hero-contact .contact-intro{color:var(--muted);margin:0 0 24px}
+    .hero-contact form{gap:12px}
+    .hero-contact textarea{min-height:120px}
     .eyebrow{color:var(--accent);font-size:.82rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;margin-bottom:18px}
     h1{font-size:clamp(3rem,8vw,6.8rem);line-height:.92;letter-spacing:-.075em;max-width:900px;margin:0 0 28px}
     .lead{font-size:clamp(1.05rem,2vw,1.35rem);color:#c5cbd2;max-width:720px;margin:0 0 34px}
@@ -37,45 +38,26 @@
     .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:999px;border:1px solid var(--line);font-weight:750;transition:.2s ease}
     .btn.primary{background:var(--accent);color:#0b0d10;border-color:var(--accent)}
     .btn:hover{transform:translateY(-2px)}
-    section{padding:100px 0;border-top:1px solid var(--line)}
-    .section-head{display:flex;justify-content:space-between;gap:40px;align-items:end;margin-bottom:42px}
-    h2{font-size:clamp(2rem,4vw,3.5rem);line-height:1;letter-spacing:-.06em;margin:0}
-    .section-intro{max-width:500px;color:var(--muted);margin:0}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px}
-    .card h3{margin:0 0 10px;font-size:1.15rem}
-    .card p{margin:0;color:var(--muted)}
-    .tag{display:inline-block;font-size:.78rem;color:var(--accent);margin-bottom:18px;font-weight:800}
-    .timeline{display:grid;gap:14px}
-    .job{display:grid;grid-template-columns:180px 1fr;gap:30px;padding:25px 0;border-bottom:1px solid var(--line)}
-    .job:last-child{border-bottom:0}
-    .date{color:var(--muted);font-size:.9rem}
-    .job h3{margin:0 0 5px;font-size:1.1rem}
-    .job p{margin:0;color:var(--muted)}
-    .contact{display:grid;grid-template-columns:.9fr 1.1fr;gap:50px}
     form{display:grid;gap:13px}
     label{font-size:.86rem;color:#c8cdd3;font-weight:700}
     input,textarea{width:100%;border:1px solid var(--line);background:#0e1115;color:var(--text);border-radius:12px;padding:14px 15px;font:inherit;outline:none}
     input:focus,textarea:focus{border-color:#65707d;box-shadow:0 0 0 3px rgba(215,255,63,.08)}
     textarea{min-height:150px;resize:vertical}
     button{cursor:pointer;border:0}
-    footer{padding:35px 0;color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between;gap:20px}
-    .smalllinks{display:flex;gap:18px}
     @media(max-width:800px){
       .navlinks{display:none}
-      .grid,.contact{grid-template-columns:1fr}
+      .hero-grid,.grid,.contact{grid-template-columns:1fr}
+      .hero{min-height:auto;padding:70px 0}
+      .hero-contact{padding:24px}
       .section-head{display:block}
       .section-intro{margin-top:16px}
       .job{grid-template-columns:1fr;gap:7px}
-      .hero{min-height:auto;padding:90px 0}
     }
     @media(max-width:520px){
       .wrap{width:min(calc(100% - 28px),var(--max))}
       h1{font-size:clamp(3rem,16vw,4.8rem)}
-      section{padding:75px 0}
-      .card{padding:22px}
-      footer{display:block}
-      .smalllinks{margin-top:12px}
+      .hero{padding:55px 0}
+      .hero-contact{padding:20px}
     }
 
     /* Modal de feedback do formulário */
@@ -97,101 +79,38 @@
 </head>
 
 <body>
-<header>
-  <nav class="wrap" aria-label="Navegação principal">
-    <a class="brand" href="#inicio" aria-label="Cássio Winkler — início">Cássio<span>.</span></a>
-    <div class="navlinks">
-      <a href="#sobre">Sobre</a>
-      <a href="#atuacao">Atuação</a>
-      <a href="#experiencia">Experiência</a>
-      <a href="#contato">Contato</a>
-    </div>
-  </nav>
-</header>
+
 
 <main>
   <section class="hero" id="inicio">
-    <div class="wrap">
-      <div class="eyebrow">Tecnologia · Sistemas · Negócios</div>
-      <h1>Cássio<br>Winkler.</h1>
-      <p class="lead">Analista de Sistemas, Tech Lead e especialista em tecnologia. Conecto negócio, pessoas e sistemas para transformar problemas em soluções práticas.</p>
-      <div class="actions">
-        <a class="btn primary" href="#contato">Vamos conversar</a>
-        <a class="btn" href="https://www.linkedin.com/in/cassiowinklerti" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      </div>
-    </div>
-  </section>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">Tecnologia · Sistemas · Negócios</div>
+        <h1>Cássio<br>Winkler.</h1>
+        <p class="lead">Analista de Sistemas, Tech Lead e especialista em tecnologia. Conecto negócio, pessoas e sistemas para transformar problemas em soluções práticas.</p>
+        </div>
 
-  <section id="sobre">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>Experiência que<br>resolve problemas.</h2>
-        <p class="section-intro">Atuação do suporte à estratégia: sistemas, ERP, dados, projetos, processos e integração entre tecnologia e negócio.</p>
-      </div>
-      <div class="grid">
-        <article class="card"><span class="tag">ERP</span><h3>TOTVS RM & Protheus</h3><p>Implantação, sustentação, parametrização, integrações e melhoria contínua.</p></article>
-        <article class="card"><span class="tag">DADOS</span><h3>SQL & BI</h3><p>SQL Server, Power BI, QlikView e Qlik Sense para apoiar decisões e eficiência.</p></article>
-        <article class="card"><span class="tag">PROJETOS</span><h3>Negócio + Tecnologia</h3><p>Requisitos, gestão de projetos, processos, fornecedores e integração entre áreas.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section id="atuacao">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>Como posso<br>ajudar.</h2>
-        <p class="section-intro">Disponível para oportunidades profissionais e também para demandas pontuais ou projetos temporários.</p>
-      </div>
-      <div class="grid">
-        <article class="card"><h3>Carreira</h3><p>Posições de Analista de Sistemas, Tech Lead, TI, ERP, projetos e áreas relacionadas — do nível Jr. ao especialista.</p></article>
-        <article class="card"><h3>Consultoria</h3><p>Diagnóstico, suporte, sustentação, melhorias, implantação e orientação técnica para empresas.</p></article>
-        <article class="card"><h3>Projetos</h3><p>Freelancer, projetos temporários, integrações, SQL, ERP, processos e desenvolvimento de soluções.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section id="experiencia">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>Trajetória.</h2>
-        <p class="section-intro">Uma carreira construída entre tecnologia, suporte, sistemas, ERP e gestão.</p>
-      </div>
-      <div class="timeline">
-        <article class="job"><div class="date">2022 — 2026</div><div><h3>Analista de Sistemas PL · Colégio Imperatriz Dona Leopoldina</h3><p>Gestão de projetos, sustentação do ERP RM TOTVS, SQL Server, melhorias de processos e integração entre áreas.</p></div></article>
-        <article class="job"><div class="date">2017 — 2022</div><div><h3>Consultor de TI · WR Tecnologia</h3><p>Consultoria em ERP TOTVS RM e Protheus, desenvolvimento ADVPL e suporte a soluções corporativas.</p></div></article>
-        <article class="job"><div class="date">2020 — 2021</div><div><h3>Analista de Sistemas SR · Delimyll Alimentos</h3><p>Coordenação de TI, administração do ERP Protheus, integrações bancárias e suporte a processos de RH.</p></div></article>
-        <article class="job"><div class="date">2018 — 2019</div><div><h3>Analista de Sistemas SR · Clube Conteza</h3><p>Gestão de TI, implantação de módulos Protheus e migração de dados.</p></div></article>
-        <article class="job"><div class="date">2008 — 2017</div><div><h3>TI & Infraestrutura</h3><p>Suporte, infraestrutura, ERP, BI e gestão de projetos em empresas de tecnologia e serviços.</p></div></article>
-      </div>
-    </div>
-  </section>
-
-  <section id="contato">
-    <div class="wrap contact">
-      <div>
+      <div class="hero-contact" id="contato">
         <div class="eyebrow">Contato</div>
-        <h2>Tem uma vaga,<br>demanda ou projeto?</h2>
-        <p class="section-intro" style="margin-top:20px">Conte um pouco sobre o que você precisa. Retorno para conversarmos sobre a melhor forma de ajudar.</p>
+        <h2>Tem uma vaga, demanda ou projeto?</h2>
+        <p class="contact-intro">Conte um pouco sobre o que você precisa. Retorno para conversarmos sobre a melhor forma de ajudar.</p>
+        <form id="contact-form" action="https://formspree.io/f/mjyklevv" method="POST">
+          <div><label for="nome">Nome</label><input id="nome" name="nome" autocomplete="name" required></div>
+          <div><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+          <div><label for="assunto">Assunto</label><input id="assunto" name="assunto" required></div>
+          <div><label for="mensagem">Mensagem</label><textarea id="mensagem" name="mensagem" required></textarea></div>
+          <div class="form-status" id="form-status" aria-live="polite"></div>
+          <button class="btn primary" id="submit-button" type="submit">Enviar mensagem</button>
+        </form>
       </div>
-      <form id="contact-form" action="https://formspree.io/f/mjyklevv" method="POST">
-        <div><label for="nome">Nome</label><input id="nome" name="nome" autocomplete="name" required></div>
-        <div><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required></div>
-        <div><label for="assunto">Assunto</label><input id="assunto" name="assunto" required></div>
-        <div><label for="mensagem">Mensagem</label><textarea id="mensagem" name="mensagem" required></textarea></div>
-        <div class="form-status" id="form-status" aria-live="polite"></div>
-        <button class="btn primary" id="submit-button" type="submit">Enviar mensagem</button>
-      </form>
     </div>
   </section>
+
+
+
+  
 </main>
 
-<footer class="wrap">
-  <div>© 2026 Cássio Winkler</div>
-  <div class="smalllinks">
-    <a href="https://www.linkedin.com/in/cassiowinklerti" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-    <a href="#inicio">Voltar ao topo ↑</a>
-  </div>
-</footer>
 
   <div class="modal" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
     <div class="modal-content">
